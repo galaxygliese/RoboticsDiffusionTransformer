@@ -1,4 +1,4 @@
-packaging==24.0
+# RDT requirements
 wandb==0.17.0
 deepspeed==0.14.2   
 accelerate==0.30.1

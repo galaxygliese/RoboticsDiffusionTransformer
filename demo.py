@@ -1,7 +1,10 @@
 #-*- coding:utf-8 -*-
 
+import sys 
+sys.path.append(".")
 # Import a create function from the code base
-from scripts.agilex_model import create_model
+# from scripts.agilex_model import create_model
+from agilex_model import create_model
 import torch
 import time
 
@@ -19,11 +22,13 @@ pretrained_vision_encoder_name_or_path = "google/siglip-so400m-patch14-384"
 tensor_type = torch.bfloat16
 # tensor_type = torch.float32
 # Create the model with the specified configuration
+# model_card = "robotics-diffusion-transformer/rdt-1b"
+model_card = "robotics-diffusion-transformer/rdt-170m"
 model = create_model(
     args=config,
     dtype=tensor_type, 
     pretrained_vision_encoder_name_or_path=pretrained_vision_encoder_name_or_path,
-    pretrained='robotics-diffusion-transformer/rdt-1b',
+    pretrained=model_card,
     control_frequency=25,
     device=device
 )
@@ -36,7 +41,7 @@ B = 1
 Ta = 65
 Ti = 2
 # Da = 7 
-D = 2048
+D = 1024 # 2024 for RDT-1B, 1024 for RDT-170M
 Di = 1152 # Embedding dimension of the image.
 x = torch.randn(B, Ta, D).to(device).type(tensor_type)  
 t = torch.randint(0, 1000, (B,)).to(device).type(tensor_type)

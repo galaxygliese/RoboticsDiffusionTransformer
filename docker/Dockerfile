@@ -1,12 +1,13 @@
-# Based on https://github.com/naruya/dl_remote/blob/master/Dockerfile
-# [1] https://github.com/robbyrussell/oh-my-zsh
-# [2] https://github.com/pyenv/pyenv/wiki/common-build-problems
-
-# FROM nvidia/cudagl:11.3.1-devel-ubuntu20.04
+# Ubuntu with CUDA
 FROM nvidia/cuda:12.6.3-cudnn-devel-ubuntu22.04
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
+
+# Set timezone
+ENV TZ=Asia/Tokyo
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 # Pick up some TF dependencies
 RUN apt-get update && apt-get install -y \
         build-essential \
@@ -15,32 +16,17 @@ RUN apt-get update && apt-get install -y \
         unzip
 
 # zsh (from [1]) ----------------
-RUN apt-get update && apt-get install -y \
-    wget git zsh
+RUN apt-get update && apt-get install -y wget git zsh
 SHELL ["/bin/zsh", "-c"]
 RUN wget http://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
 RUN sed -i 's/# DISABLE_AUTO_UPDATE="true"/DISABLE_AUTO_UPDATE="true"/g' ~/.zshrc
 
-# pyenv (from [2]) ----------------
-# ENV DEBIAN_FRONTEND=noninteractive
-# RUN apt-get update && apt-get install -y \
-#     build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev \
-#     libsqlite3-dev wget curl llvm libncurses5-dev libncursesw5-dev \
-#     xz-utils tk-dev libffi-dev liblzma-dev python-openssl git
-
-# X window ----------------
-# RUN apt-get update && apt-get install -y \
-    # xvfb x11vnc python-opengl icewm
-# RUN echo 'alias vnc="export DISPLAY=:0; Xvfb :0 -screen 0 1400x900x24 &; x11vnc -display :0 -forever -noxdamage > /dev/null 2>&1 &; icewm-session &"' >> /root/.zshrc
-
-# utils ----------------
+# X window
 RUN apt-get update && apt-get install -y \
     vim \
-    libsdl2-2.0-0 \
-    cmake \ 
-    # xvfb \
-    xorg-dev \
-    freeglut3-dev \
+    libsdl2-2.0-0 \ 
+    cmake \
+    xorg-dev freeglut3-dev \
     libglu1-mesa-dev \
     x11-apps
 
@@ -52,31 +38,30 @@ RUN apt-get update && apt-get install -y \
     patchelf \
     python3-pip
 
-COPY requirements.txt /root/
+# Install Mambaforge -> robotsuite env
+COPY conda_environment.yaml /root/
 
-# Look up https://pytorch.org/get-started/previous-versions/ with your cuda version for a correct command
-RUN pip install torch==2.5.0 torchvision==0.20.0 --index-url https://download.pytorch.org/whl/cu121
+ENV MAMBA_DIR=/opt/mamba
+RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh \
+    && bash Miniforge3-Linux-x86_64.sh -b -p $MAMBA_DIR \
+    && rm Miniforge3-Linux-x86_64.sh
 
-# Install packaging
-RUN pip install packaging==24.0
+# Initialize Mamba environment
+ENV PATH="$MAMBA_DIR/bin:$PATH"
+RUN mamba init zsh && \
+    mamba env create -f /root/conda_environment.yaml
 
-# Install flash-attn
-RUN pip install flash-attn 
-#--no-build-isolation
-
-# Install other prequisites
-RUN pip install -r /root/requirements.txt
-
-
+RUN echo 'mamba init' >> /root/.zshrc
+RUN echo 'mamba activate rdt' >> /root/.zshrc
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
-
+    
 # finalize image  ----------------
 RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN source ~/.zshrc
-
+        rm -rf /var/lib/apt/lists/*
+    
+RUN source /root/.zshrc
+    
 WORKDIR /root
 CMD ["zsh"]

@@ -7,4 +7,4 @@ else
   TAG_NAME="latest"
 fi
 
-docker-compose up ${TAG_NAME} &
+docker compose up ${TAG_NAME} &

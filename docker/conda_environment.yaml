@@ -8,13 +8,13 @@ dependencies:
   - python=3.10.0
   - pip=22.2.2
   - cudatoolkit=11.6
-  - pytorch=1.12.1
-  - torchvision=0.13.1
-  - pytorch3d=0.7.0
+  - pytorch==2.2.2
+  - torchvision==0.17.2
+  - pytorch3d=0.7.8
   - numpy=1.23.3
   - numba==0.56.4
   - scipy==1.9.1
-  - py-opencv=4.6.0
+  # - py-opencv=4.6.0
   - cffi=1.15.1
   - ipykernel=6.16
   - matplotlib=3.6.1
@@ -29,7 +29,7 @@ dependencies:
   - scikit-image=0.19.3
   - gym=0.21.0
   - pymunk=6.2.1
-  - wandb=0.13.3
+  # - wandb=0.13.3
   - threadpoolctl=3.1.0
   - shapely=1.8.4
   - cython=0.29.32
@@ -45,24 +45,34 @@ dependencies:
   - diffusers=0.11.1
   - av=10.0.0
   - cmake=3.24.3
+  - qdrant-client=1.13.3
   # trick to force reinstall imagecodecs via pip
-  - imagecodecs==2022.8.8
-  - timm==0.9.2
-  - faiss-gpu==1.8.0
-  - deepspeed==0.14.2 
-  - accelerate==0.30.1
-  - transformers==4.41.0
-  - sentencepiece==0.2.0
+  # - imagecodecs==2022.8.8
   - pip:
     - ray[default,tune]==2.2.0
     # requires mujoco py dependencies libosmesa6-dev libgl1-mesa-glx libglfw3 patchelf
     - free-mujoco-py==2.1.6
     - pygame==2.1.2
     - pybullet-svl==3.1.6.4
-    - robosuite @ https://github.com/cheng-chi/robosuite/archive/277ab9588ad7a4f4b55cf75508b44aa67ec171f0.tar.gz
+    # - robosuite 
+    # - robosuite @ https://github.com/cheng-chi/robosuite/archive/277ab9588ad7a4f4b55cf75508b44aa67ec171f0.tar.gz
+    - robosuite==1.5.1
     - robomimic==0.2.0
     - pytorchvideo==0.1.5
     # pip package required for jpeg-xl
     - imagecodecs==2022.9.26
     - r3m @ https://github.com/facebookresearch/r3m/archive/b2334e726887fa0206962d7984c69c5fb09cceab.tar.gz
     - dm-control==1.0.9
+    # RDT requirements
+    - wandb==0.17.0
+    - deepspeed==0.14.2   
+    - accelerate==0.30.1
+    - diffusers==0.27.2
+    - timm==1.0.3
+    - transformers==4.41.0
+    - sentencepiece==0.2.0
+    - h5py==3.11.0
+    - opencv-python==4.9.0.80
+    - imgaug==0.4.0
+    - huggingface-hub==0.24.7
+    - flash-attn==2.7.4.post1
